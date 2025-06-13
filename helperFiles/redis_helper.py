@@ -1,7 +1,7 @@
 import redis
 import json
 import os
-from authorization.creds import REDIS_HOST, REDIS_PASSWORD, REDIS_PORT
+from authorization.creds import REDIS_HOST, REDIS_PASSWORD, REDIS_PORT, redis_encryption_non_admin, redis_encryption_all, no_redis_encryption
 from helperFiles.helpers import send_error_whatsapp_message, extract_phone_number
 from helperFiles.sentry_helper import set_sentry_context
 from datetime import datetime, timezone as tzn, timedelta
@@ -28,11 +28,18 @@ r_worker = redis.Redis(
 CLEAN_ADMIN_NUMBER = extract_phone_number(ADMIN_NUMBER)
 
 def is_not_user_admin(key):
-    return False # allow debug for beta testing
-    # user_id = key.split(':')[1] if ':' in key else None
-    # if user_id and user_id != CLEAN_ADMIN_NUMBER:
-    #     return True
-    # return False
+    # return False # allow debug for beta testing
+    if redis_encryption_all:
+        return True
+    elif redis_encryption_non_admin:
+        user_id = key.split(':')[1] if ':' in key else None
+        if user_id and user_id != CLEAN_ADMIN_NUMBER:
+            return True
+        return False
+    elif no_redis_encryption:
+        return False
+    else:
+        return False
 
 def is_encrypted(value):
     return isinstance(value, str) and value.startswith("RENC_v")
