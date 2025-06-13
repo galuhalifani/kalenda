@@ -1,5 +1,4 @@
 Flask
-flask
 openai
 python-dotenv
 pymongo
@@ -12,3 +11,14 @@ deep-translator
 langdetect
 pandas
 requests
+cryptography
+requests
+pillow
+uuid
+markdown
+cloudinary
+redis
+gunicorn
+sentry-sdk
+rq
+flask_cors
